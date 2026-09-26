@@ -2,8 +2,20 @@ const connectDB = require("./DB/connect");
 const errorHandling = require("./middleware/centralizedMiddleware");
 const express = require("express");
 const app = express();
+const cors = require("cors");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 require("dotenv").config();
 
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 300,
+});
+
+app.use(helmet());
+app.use(limiter);
+app.use(express.json());
+app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 connectDB();
 
 app.use(errorHandling);
