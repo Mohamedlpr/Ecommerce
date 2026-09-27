@@ -12,12 +12,19 @@ const limiter = rateLimit({
   max: 300,
 });
 
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+});
+
 app.use(helmet());
 app.use(limiter);
 app.use(express.json());
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 connectDB();
 
+app.use("/api/auth", authLimiter, require("./routes/authRoutes"));
+app.use("/api/products", require("./routes/productRoutes"));
 app.use(errorHandling);
 
 const PORT = process.env.PORT;
